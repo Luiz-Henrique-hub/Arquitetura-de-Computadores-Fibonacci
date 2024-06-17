@@ -1,0 +1,66 @@
+.data
+
+n: .word 0      # número de termos
+t1: .word 0     # termo atual
+t2: .word 1     # próximo termo
+prox: .word 0   # próximo valor de Fibonacci
+Soma: .word 0
+
+msg_n_termos: .asciiz "Digite o numero de termos: "
+comma: .asciiz ", "
+
+.text
+.globl main
+
+main:
+    # leitura de input
+    li $v0, 4
+    la $a0, msg_n_termos
+    syscall
+
+    li $v0, 5
+    syscall
+    sw $v0, n
+
+    li $t1, 0
+    li $t2, 1
+    li $t4, 1
+
+    lw $t0, n           # carregar n em $t0
+
+    # imprimir primeiro termo
+    li $v0, 1
+    move $a0, $t1
+    syscall
+
+    beq $t0, $t4, FIM   # se n == 1, fim
+
+    # imprimir segundo termo
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    addi $t4, $t4, 1    # incrementar contador
+
+    LOOP:
+        add $t3, $t1, $t2 # prox = t1 + t2
+        move $t1, $t2     # t1 = t2
+        move $t2, $t3     # t2 = prox
+
+	# imprimir vírgula
+    	li $v0, 4
+    	la $a0, comma
+    	syscall
+
+        li $v0, 1
+        move $a0, $t3
+        syscall
+
+        addi $t4, $t4, 1
+        bge $t4, $t0, FIM
+
+        j LOOP
+
+    FIM:
+        li $v0, 10
+        syscall
